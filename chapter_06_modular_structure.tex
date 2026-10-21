@@ -1,1 +1,179 @@
-\chapter{Modular Structure}
+\chapter{MODULAR STRUCTURE}
+
+\section{Introduction}
+
+The proposed pneumatic tip-growing robot is organized into separate functional modules to simplify mechanical design, hardware integration, software development, and testing. Each module performs a specific function and communicates with the relevant modules to support the overall operation of the robot.
+
+The system consists of a pneumatic growth module, a tendon-based steering module, a servo-actuation module, a camera-based perception module, an embedded electronics module, and a ROS 2 software module. These components work together to support forward growth, directional steering, environmental observation, and navigation planning.
+
+A modular architecture allows the individual subsystems to be developed and evaluated independently before the complete system is integrated.
+
+\section{Mechanical Growth Module}
+
+The mechanical growth module consists of the flexible tube and the tip-everting structure. The flexible tube forms the growing body of the robot and extends through eversion when suitable pneumatic pressure is applied.
+
+The geometry and material properties of the tube influence its flexibility, growth behavior, and interaction with the surrounding environment. The growing tip also provides the mounting region for the steering arrangement and camera, where the mechanical design permits.
+
+The module must be designed so that the additional tendons, wiring, and sensor components do not prevent the tube from everting. Adequate space and suitable routing are required to reduce friction and interference during growth.
+
+Figure~\ref{fig:mech_structure} illustrates the overall mechanical structure of the pneumatic tip-growing robot, depicting the base station, the flexible tip-everting tube, and the growing tip assembly.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{{img/6_Robot Overall Mechanical Structure}.png}
+    \caption{Overall Mechanical Structure of the Pneumatic Tip-Growing Robot}
+    \label{fig:mech_structure}
+\end{figure}
+
+\textbf{Main components:}
+\begin{itemize}
+    \item Flexible pneumatic growing tube.
+    \item Tip-everting structure.
+    \item Tip support and tendon attachment arrangement.
+    \item Mechanical guides for tendon routing.
+\end{itemize}
+
+\section{Pneumatic Actuation Module}
+
+The pneumatic module supplies and regulates the air required to drive the growing mechanism. It consists of an air pump or compressor, pneumatic tubing, pressure regulation, and a suitable control valve. A pressure sensor may be incorporated to monitor operating pressure.
+
+The pump provides the air supply, while the regulator helps maintain the intended pressure range. The valve controls the air supply according to the growth command. Pressure measurements can be communicated to the controller for monitoring and safety functions.
+
+The design of this module depends on the required pressure, air flow, tube geometry, and characteristics of the flexible material. Suitable pressure regulation and overpressure protection are necessary before physical testing.
+
+\textbf{Main components:}
+\begin{itemize}
+    \item Air pump or compressor.
+    \item Pressure regulator.
+    \item Pneumatic control valve.
+    \item Pressure sensor, if implemented.
+    \item Pneumatic hoses and fittings.
+\end{itemize}
+
+\section{Tendon-Based Steering Module}
+
+The steering module consists of four axial tendons arranged around the flexible tube. The tendons are positioned to provide directional control of the growing tip in the horizontal X--Y plane.
+
+The tendons are connected to the servo-actuation mechanism at the base station. Coordinated changes in tendon displacement and tension produce bending at the steering region near the growing tip.
+
+The steering mechanism must accommodate continuous tube growth. Therefore, tendon routing, cable payout, tension control, and friction are important design considerations. The relationship between servo movement and the resulting tip direction must be determined through mechanical analysis and calibration.
+
+Figure~\ref{fig:directional_steering} illustrates the directional steering behavior of the growing robot under four-tendon control, showing the bending configurations and corresponding tendon tension levels.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{{img/6_Directional Steering of the Growing Robot(Four Tendon Control}.png}
+    \caption{Directional Steering of the Growing Robot via Four-Tendon Control}
+    \label{fig:directional_steering}
+\end{figure}
+
+\textbf{Main components:}
+\begin{itemize}
+    \item Four axial steering tendons.
+    \item Tendon guides and routing channels.
+    \item Tendon attachment points near the steering tip.
+    \item Base-mounted tendon actuation interfaces.
+\end{itemize}
+
+\section{Servo Actuation Module}
+
+The servo-actuation module provides controlled movement of the four steering tendons. Four servo motors are mounted at the stationary base station rather than at the growing tip. This arrangement reduces the actuation mass carried by the moving portion of the robot.
+
+Each servo is assigned to a tendon and receives a command from the steering controller through the embedded control interface. Servo movement adjusts tendon displacement and tension according to the desired steering direction.
+
+The servo mounting structure must provide adequate support and alignment. The tendon drive mechanism must also prevent excessive slack, unwanted tangling, and interference with pneumatic growth.
+
+Figure~\ref{fig:servo_assembly} depicts the detailed layout of the base-mounted servo motors and cable-drum assembly, including spool design, cable guides, and tendon entry into the growing tube.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{{img/6_Base-Mounted Servo Motors and Cable-Drum Assembly}.png}
+    \caption{Base-Mounted Servo Motors and Cable-Drum Assembly}
+    \label{fig:servo_assembly}
+\end{figure}
+
+\textbf{Main components:}
+\begin{itemize}
+    \item Four servo motors.
+    \item Servo mounting frame.
+    \item Tendon spools or cable drums, if used.
+    \item Tendon guides and tension adjustment mechanisms.
+    \item Suitable servo power supply.
+\end{itemize}
+
+The servo torque, angular range, spool diameter, and allowable tendon tension must be selected according to the actual mechanical requirements.
+
+\section{Camera-Based Perception Module}
+
+The perception module uses a camera positioned near the growing tip to capture images of the environment ahead of the robot. The images are supplied to the object detection pipeline for visual analysis.
+
+A pretrained YOLO model processes the camera images and identifies objects belonging to its supported classes. The model produces bounding boxes, class labels, and confidence scores for the detected objects.
+
+The detection results provide visual information for the navigation system. However, accurate obstacle distance and three-dimensional position cannot generally be obtained from bounding boxes alone. Additional sensing, calibration, or geometric estimation may be necessary for metric navigation.
+
+The camera mount and wiring arrangement should be designed to protect the sensor and avoid interfering with tube eversion and steering.
+
+\textbf{Main components:}
+\begin{itemize}
+    \item Camera module.
+    \item Camera mounting structure.
+    \item Image acquisition interface.
+    \item Pretrained YOLO inference software.
+\end{itemize}
+
+\section{Embedded Electronics Module}
+
+The embedded electronics module connects the servo motors, pneumatic valve, pressure sensor, and other installed hardware to the control software. An ESP32 or another suitable microcontroller can provide low-level actuator control and sensor communication.
+
+The embedded controller receives commands from the higher-level ROS 2 software through an appropriate communication interface. It then generates servo-control signals and operates the pneumatic valve through a correctly rated driver circuit.
+
+If pressure sensing is implemented, the controller can also transmit pressure measurements for monitoring and control. The hardware design must account for electrical compatibility, current requirements, grounding, and actuator protection.
+
+Figure~\ref{fig:electronics_wiring} presents the electronics and wiring diagram of the growing robot, showing connections between the ESP32 controller, power supply, servo actuators, valve driver, and sensory devices.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{{img/6_Electronics and Wiring Diagram od the Growing Robot}.png}
+    \caption{Electronics and Wiring Diagram of the Growing Robot}
+    \label{fig:electronics_wiring}
+\end{figure}
+
+\textbf{Main components:}
+\begin{itemize}
+    \item ESP32 or suitable microcontroller.
+    \item Servo signal connections.
+    \item External servo power supply.
+    \item Pneumatic valve driver.
+    \item Pressure sensor interface, if used.
+    \item Communication interface with the ROS 2 computer.
+\end{itemize}
+
+The final wiring and pin assignments depend on the selected hardware and must be verified before assembly.
+
+\section{ROS 2 Software Module}
+
+The ROS 2 software module coordinates visual perception, path planning, steering commands, and pneumatic growth control. The software is divided into separate nodes so that each function can be developed and tested independently.
+
+The principal software components are:
+
+\begin{enumerate}
+    \item \textbf{Camera and object detection node:} Receives camera images and runs the pretrained YOLO model.
+    \item \textbf{Path-planning node:} Uses available environmental information to determine a desired direction or trajectory.
+    \item \textbf{Steering-controller node:} Converts the desired direction into commands for the four steering tendons.
+    \item \textbf{Servo-control interface:} Sends commands to the embedded controller for servo actuation.
+    \item \textbf{Growth-control node:} Manages pneumatic growth commands and, where implemented, pressure feedback.
+\end{enumerate}
+
+The embedded hardware interface communicates with the ROS 2 computer through a suitable protocol. The exact communication method and topic definitions depend on the final implementation.
+
+The modular software structure allows the perception and planning functions to be tested in simulation before connection to the physical actuators.
+
+\section{Integration of the Modules}
+
+The modules are integrated through their mechanical interfaces, electrical connections, and software communication pathways.
+
+The pneumatic growth module extends the flexible tube. The tendon-steering module controls the direction of the growing tip through four tendons driven by the base-mounted servo motors. The perception module provides camera images and object detection results to the ROS 2 software.
+
+The path planner determines the desired direction based on the available environmental information. The steering controller converts this direction into tendon commands, while the growth-control module manages pneumatic actuation.
+
+The embedded controller provides the hardware interface for the servos and pneumatic valve. This separation allows the mechanical, pneumatic, electronic, and software components to be tested individually before full-system evaluation.

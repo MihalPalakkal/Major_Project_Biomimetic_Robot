@@ -1,1 +1,120 @@
-\chapter{Dataset Description and Preprocessing}
+\chapter{DATASET DESCRIPTION AND PREPROCESSING}
+
+\section{Introduction}
+
+Computer vision is an important component of the proposed pneumatic tip-growing robot because it provides visual information about the environment ahead of the growing tip. The camera captures images that are processed by a pretrained You Only Look Once (YOLO) object detection model. The detection results can be used by the navigation system to identify visible objects and support path-planning decisions.
+
+Unlike a project that trains an object detection model from scratch, the proposed system initially uses a pretrained YOLO model. Therefore, the main focus of this chapter is image acquisition, preprocessing, model inference, and integration of detection results with the Robot Operating System 2 (ROS 2) architecture.
+
+\section{Dataset Description}
+
+\subsection{Source of Image Data}
+
+The primary input to the object detection system consists of images captured by a camera mounted near the growing tip of the robot. These images represent the visible surroundings and provide information about objects that may influence the robot's movement.
+
+During development, prerecorded images or publicly available sample images may be used to test the detection pipeline. During physical operation, images are obtained from the robot's camera through a ROS 2 image stream.
+
+The final image source and the number of images used for testing should be documented after the implementation is established. No custom dataset size or experimental image count is assumed in the current project description.
+
+\subsection{Pretrained YOLO Model}
+
+YOLO is a real-time object detection method that identifies objects in an image by predicting their classes, bounding boxes, and confidence scores.
+
+The proposed system uses pretrained model weights, allowing object detection to be implemented without initially training a new model. The model variant and its supported object classes must be selected according to the computational resources available and the objects relevant to the intended environment.
+
+The pretrained model may identify commonly represented object categories, but it cannot be assumed to recognize every obstacle encountered by the robot. If the required objects are not supported by the selected model, additional data collection and model fine-tuning may be required.
+
+\subsection{Dataset Organization}
+
+Since the initial implementation uses a pretrained model, a training, validation, and testing split is not automatically required for model training. However, a separate set of representative images should be retained for evaluating detection performance.
+
+The evaluation images should represent the expected operating conditions, including different object positions, viewing angles, lighting conditions, and possible occlusions. Images captured from the same video sequence should be handled carefully when constructing evaluation sets to avoid overly optimistic results from nearly identical frames.
+
+\section{Image Preprocessing}
+
+Image preprocessing converts camera images into a format suitable for the selected YOLO inference interface. The exact operations depend on the model implementation and its software library.
+
+\subsection{Image Acquisition}
+
+Images are captured by the camera positioned near the growing tip. The camera stream is received by the ROS 2 perception node for processing.
+
+Image quality can be affected by illumination, focus, camera orientation, motion blur, and obstructions near the camera. These factors should be considered when positioning the camera and evaluating the detection system.
+
+\subsection{Image Format Conversion}
+
+The ROS 2 image message is converted into an image representation compatible with the inference library. Depending on the camera driver and software interface, this may involve converting the image message to an OpenCV image and checking the color-channel order.
+
+Correct image encoding is important because an incorrect color format can affect the model input and the interpretation of detection results.
+
+\subsection{Image Resizing and Letterboxing}
+
+The input image is resized or letterboxed to match the input dimensions required by the selected model. Letterboxing preserves the image aspect ratio by adding padding when necessary, reducing distortion of object shapes.
+
+The actual input resolution depends on the selected YOLO model and inference configuration. A resolution such as $640 \times 640$ pixels may be used as an example if supported by the selected implementation, but it should not be reported as a finalized project setting until confirmed.
+
+\subsection{Pixel Normalization and Tensor Conversion}
+
+The preprocessed image is converted into the numerical representation expected by the model. Depending on the inference library, this may involve scaling pixel values, arranging image dimensions, and converting the image into a tensor.
+
+When a standard YOLO inference interface is used, resizing, normalization, tensor conversion, and related preprocessing operations may be performed internally. Additional manual preprocessing should be avoided when the library already handles these operations.
+
+\subsection{Object Detection Inference}
+
+After preprocessing, the image is supplied to the pretrained YOLO model. The model generates object detection predictions, including class labels, confidence scores, and bounding-box coordinates.
+
+A confidence threshold can be configured to filter detections, and the inference pipeline may apply non-maximum suppression to remove overlapping duplicate detections. These settings should be selected according to the chosen model and evaluated during testing.
+
+\subsection{Postprocessing}
+
+The model's detection output is converted into a format suitable for the ROS 2 application. The processed results may include the detected object's class, confidence score, and bounding-box coordinates relative to the image.
+
+The detection results can then be published or forwarded to the path-planning component. Because image bounding boxes provide two-dimensional information, additional depth sensing, camera calibration, or geometric estimation may be required to calculate metric obstacle positions.
+
+\section{Image Processing Workflow}
+
+The proposed image processing pipeline consists of the following stages:
+
+\begin{enumerate}
+    \item \textbf{Camera acquisition:} Capture an image of the environment near the growing tip.
+    \item \textbf{Format conversion:} Convert the ROS 2 image message into the representation required by the inference library.
+    \item \textbf{Resizing and letterboxing:} Adjust the image to the model's input dimensions while preserving its aspect ratio.
+    \item \textbf{Normalization and tensor conversion:} Prepare the numerical image representation for inference.
+    \item \textbf{YOLO inference:} Run the pretrained object detection model.
+    \item \textbf{Postprocessing:} Extract and filter object classes, confidence scores, and bounding boxes.
+    \item \textbf{ROS 2 integration:} Forward the detection results to the path-planning component.
+\end{enumerate}
+
+Figure~\ref{fig:processing_pipeline} illustrates the image processing workflow of the proposed system.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/4_processing_pipeline.png}
+    \caption{Image Processing Pipeline}
+    \label{fig:processing_pipeline}
+\end{figure}
+
+This workflow separates image processing from steering and pneumatic control, allowing the perception component to be developed and evaluated independently.
+
+\section{Integration with ROS 2}
+
+The camera node publishes image messages through a ROS 2 image topic. The object detection node subscribes to the image stream, performs the required preprocessing, and runs inference using the pretrained YOLO model.
+
+The resulting detections are made available to the path planner through an appropriate ROS 2 message or topic. The path planner determines a desired direction based on the navigation strategy, and the steering controller converts the direction into commands for the four tendon-actuation servos.
+
+The pneumatic growth controller manages the air supply and valve commands separately. This modular architecture allows the visual perception, navigation, tendon steering, and growth functions to be tested independently.
+
+\section{Evaluation Considerations}
+
+The pretrained model should be evaluated using images representative of the intended operating environment. Relevant measures may include precision, recall, mean Average Precision (mAP), inference time, and the frequency of missed or false detections.
+
+For real-time operation, inference latency and processing rate are also important because delayed detections may affect navigation decisions. If the robot operates in confined or partially occluded environments, testing should specifically examine whether the selected model recognizes the relevant obstacles under those conditions.
+
+Actual dataset statistics and performance metrics must be obtained through implementation and testing. They are not assumed in this chapter.
+
+\section{Limitations}
+
+The proposed image-processing system depends on the quality of the camera images and the object categories supported by the pretrained YOLO model. Changes in illumination, viewpoint, occlusion, and environmental appearance may reduce detection reliability.
+
+Furthermore, object detection does not independently provide a complete navigation solution. The detected objects must be interpreted by the path planner, and reliable obstacle-distance estimation may require additional sensing or geometric processing.
+
+These limitations should be considered when integrating the vision system with the pneumatic growing mechanism and four-tendon steering controller.

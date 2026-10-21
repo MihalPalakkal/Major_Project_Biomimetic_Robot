@@ -1,1 +1,116 @@
-\chapter{Tools Used}
+\chapter{TOOLS USED}
+
+\section{Introduction}
+
+The development of the proposed plant-root-inspired pneumatic tip-growing robot requires a combination of mechanical components, pneumatic actuators, electronic control hardware, computer vision, and robotics software. These tools work together to enable pneumatic growth, directional steering, environmental perception, and coordination between the robot's hardware and software components.
+
+The tools are selected according to their roles in mechanical construction, image processing, object detection, and system integration. The final selection of hardware specifications and software versions should be based on the implemented system.
+
+\section{Software Tools}
+
+\subsection{Robot Operating System 2 (ROS 2)}
+
+ROS 2 is intended to serve as the main software integration framework for the proposed robot. It provides a modular architecture in which separate software components can communicate through nodes and communication interfaces. The framework can be used to connect camera acquisition, object detection, navigation logic, steering control, and pneumatic actuation~[11].
+
+In the proposed system, ROS 2 may coordinate the following functions:
+
+\begin{itemize}
+    \item Receiving images from the camera.
+    \item Passing images to the object detection component.
+    \item Receiving and distributing object detection results.
+    \item Supporting navigation and steering decisions.
+    \item Communicating control commands to the hardware interface.
+    \item Coordinating pneumatic growth and tendon-based steering.
+\end{itemize}
+
+The final implementation should specify the ROS 2 distribution, node names, topic names, and message types used by the system. These details depend on the software configuration selected for the project.
+
+\subsection{YOLO Object Detection}
+
+You Only Look Once (YOLO) is an object detection approach used to identify objects and estimate their locations within an image. The proposed system uses a pretrained YOLO model to process images captured by the camera near the growing tip.
+
+The Ultralytics YOLO tools support object detection and inference on supported image and video sources~[12], [13]. The model can produce bounding boxes, predicted class labels, and confidence scores for detected objects.
+
+Within the proposed robot, these outputs can provide visual information to the ROS 2 navigation and steering components. The suitability of the model depends on whether its supported object classes are appropriate for the intended environment.
+
+The specific YOLO version and pretrained model weights should be recorded once confirmed. No model accuracy or detection performance is assumed in this report.
+
+\subsection{OpenCV}
+
+OpenCV is a computer vision library that can support camera image acquisition and image-processing operations. Its functionality includes handling image data, resizing images, converting colour representations, and preparing frames for subsequent processing~[14].
+
+In the proposed system, OpenCV may be used to:
+
+\begin{itemize}
+    \item Acquire or handle camera frames, depending on the camera interface.
+    \item Convert image formats when required.
+    \item Resize images according to the selected model's input configuration.
+    \item Support image display and debugging during development.
+    \item Assist in visualizing detected objects and bounding boxes.
+\end{itemize}
+
+Preprocessing should be configured to match the requirements of the selected YOLO implementation. If the inference framework already performs certain preprocessing operations, duplicating them should be avoided.
+
+\subsection{Programming Language}
+
+Python may be used to implement the camera-processing pipeline, invoke the pretrained YOLO model, and develop ROS 2 nodes. Its suitability depends on the selected ROS 2 distribution and the compatibility of the required software packages.
+
+The program can receive camera frames, execute object detection, process detection results, and communicate with other ROS 2 components. If a separate microcontroller manages the servo motors or pneumatic valves, an appropriate communication interface must be implemented between the ROS 2 computer and the microcontroller.
+
+The final report should specify the programming language and version actually used in the implementation.
+
+\subsection{Development and Visualization Tools}
+
+A code editor or integrated development environment may be used to develop, organize, and debug the software. ROS 2 command-line tools can assist with checking nodes, topics, and message communication. RViz2 may be used to visualize supported sensor data or other ROS 2 information during system development.
+
+A simulator such as Gazebo may be considered if simulation is part of the project. These tools should only be listed as implemented tools if they were actually used; otherwise, they should be identified as optional development tools.
+
+\section{Hardware Tools}
+
+\subsection{Pneumatic Components}
+
+The pneumatic system provides the pressure required to drive the tip-eversion mechanism. Its components may include an air pump or compressor, pressure regulator, tubing, fittings, and a suitable valve.
+
+The pump supplies air, the regulator helps control the operating pressure, and the valve controls the air supply to the robot. The selected components must be compatible with the required pressure range, flow demand, and physical construction.
+
+The actual component models and their pressure ratings should be documented using the corresponding manufacturer datasheets.
+
+\subsection{Servo Motors and Tendon Actuation}
+
+Four servo motors are proposed for actuating the four steering tendons arranged around the robot body. Coordinated tendon movement can create directional bending of the growing structure.
+
+The servo motors must provide sufficient torque and suitable travel for the tendon mechanism. Their selection should consider the required tendon tension, cable routing, friction, and mechanical limits.
+
+The motor model, torque rating, operating voltage, and control interface should be recorded from the datasheet for the components actually selected.
+
+\subsection{Camera and Sensors}
+
+A camera positioned near the growing tip provides images of the environment for object detection. The camera should provide adequate image quality and a suitable field of view for the intended operating conditions.
+
+Additional sensors, such as a pressure sensor or inertial measurement unit (IMU), may be considered to monitor pneumatic conditions or estimate motion and orientation. Their inclusion depends on the final hardware design.
+
+The report should distinguish sensors that are installed and tested from those that are only proposed for future development.
+
+\subsection{Microcontroller and Electronic Interface}
+
+A microcontroller, such as an ESP32 or another compatible controller, may be used to interface with the servo motors and pneumatic control hardware. It can receive commands from the main computer and generate the appropriate actuator control signals.
+
+The electronic system may also include a suitable power supply, servo driver, wiring, connectors, and valve driver circuitry. Electrical ratings and interface requirements should be checked against the actual component datasheets.
+
+Appropriate protection and control measures are necessary to prevent unintended actuator motion and excessive pneumatic pressure.
+
+\section{Mechanical Design Tools}
+
+Computer-aided design (CAD) software may be used to prepare the mechanical layout of the robot, including the base station, tendon-routing mechanism, camera mount, and pneumatic connections.
+
+The design process should consider alignment, assembly access, cable friction, structural flexibility, and the space required for the growing tube. CAD drawings can help document component placement and support fabrication.
+
+The specific CAD package should be named in the final report according to the software actually used.
+
+\section{Integration of Tools}
+
+The software and hardware tools operate as interconnected parts of the overall system. The camera supplies environmental images, OpenCV can handle image-processing tasks, and the pretrained YOLO model produces object detections~[12]--[14]. ROS 2 can coordinate communication between perception, navigation, and hardware-control components~[11].
+
+The hardware-control interface then communicates the required commands to the servo motors and pneumatic system. The servos actuate the steering tendons, while the pneumatic subsystem controls growth of the robot body.
+
+The overall system therefore combines perception, decision-making, actuation, and communication. The actual level of automation depends on the implemented control logic and the availability of feedback from the robot and its sensors.

@@ -1,1 +1,13 @@
-\chapter{Conclusion}
+\chapter{CONCLUSION}
+
+The proposed project focuses on the design and development of a pneumatic tip-growing robot that combines flexible tube eversion, four-tendon steering, camera-based object detection, and ROS 2-based control. The objective is to establish a modular robotic system capable of controlled forward growth and directional steering, with visual perception supporting navigation decisions.
+
+The mechanical design incorporates a flexible pneumatic tube that extends through eversion and four axial tendons arranged around the growing body. Four servo motors positioned at the base station are intended to control tendon movement and direct the growing tip in the horizontal X--Y plane. This arrangement separates the main actuation hardware from the moving tip while introducing design requirements related to tendon routing, tension, friction, and cable payout during growth.
+
+For environmental perception, a camera mounted near the growing tip provides images to a pretrained YOLO object detection model. The model identifies objects belonging to its supported classes and produces bounding boxes, class labels, and confidence scores. These results are intended to provide visual information to the path-planning component. ROS 2 provides a modular software architecture for connecting image processing, path planning, steering control, and pneumatic growth management.
+
+The literature review established that tip-growing robots, pneumatic eversion, steering mechanisms, sensing approaches, and simulation techniques have been investigated in previous research. These studies also highlight challenges associated with payload integration, friction, curved-path behavior, sensing reliability, and retrieval. Consequently, the proposed project focuses on integrating established robotic principles into a specific mechanical and software architecture rather than claiming a completely new growing-robot concept.
+
+The effectiveness of the proposed system will depend on the successful integration of its mechanical, pneumatic, electronic, and software components. Future evaluation should examine growth stability, steering accuracy, tendon coordination, object detection reliability, and the response of the integrated system under different operating conditions. Simulation and physical experiments will be necessary to verify the relationship between planned trajectories and actual robot movement.
+
+Further development may include calibrated closed-loop steering, improved obstacle-distance estimation, more reliable tendon tension management, and systematic testing of deployment and retrieval. Overall, the project provides a foundation for investigating camera-assisted navigation in a pneumatically actuated, tendon-steered growing robot. Its practical contribution will be established through implementation, experimental evaluation, and comparison against clearly defined performance criteria.

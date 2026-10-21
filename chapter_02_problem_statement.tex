@@ -1,1 +1,76 @@
-\chapter{Problem Statement}
+\chapter{PROBLEM STATEMENT}
+
+\section{Introduction}
+
+Robotic systems designed for confined and complex environments require mechanisms that can move through restricted spaces while maintaining control over their direction. Conventional rigid robots may encounter limitations when navigating narrow passages or environments with changing geometries. Pneumatic tip-growing robots offer a potential alternative because they extend a flexible tube through eversion rather than moving the entire body forward.
+
+Despite this advantage, controlling the direction of a growing robot remains a significant engineering challenge. Pneumatic pressure can support forward growth, but it does not independently provide precise directional steering. In addition, navigating an unfamiliar environment requires information about visible obstacles and a method for translating that information into suitable steering commands.
+
+This project addresses these challenges through the proposed integration of pneumatic growth, four-tendon steering, camera-based object detection, and ROS 2-based control.
+
+\section{Definition of the Problem}
+
+The primary problem is to develop a control architecture for a pneumatically actuated tip-growing robot that can extend its flexible body and direct its growing tip toward a desired direction.
+
+The robot uses four axial tendons arranged around the flexible tube. Four servo motors positioned at the base station regulate tendon movement to produce directional bending at the growing tip. At the same time, a pneumatic system supplies air to support the eversion process.
+
+A camera mounted near the growing tip provides images of the surrounding environment. A pretrained YOLO model processes these images to detect objects belonging to its supported classes. The detection information is intended to support path planning through ROS 2.
+
+The central engineering challenge is coordinating the mechanical, pneumatic, perception, and control components so that the robot's growth and steering commands are compatible with the intended navigation path.
+
+\section{Existing Challenges}
+
+\subsection{Directional Control During Growth}
+
+A pneumatic growing tube may extend forward without providing sufficient control over its direction. A steering mechanism is therefore required to guide the growing tip toward a desired position.
+
+\subsection{Tendon Actuation and Routing}
+
+Four steering tendons must be coordinated to produce the intended tip movement. Tendon friction, tension, cable payout, and mechanical routing may affect the relationship between servo movement and actual tip direction. The design must also allow the robot to continue growing without obstructing the eversion mechanism.
+
+\subsection{Environmental Perception}
+
+The robot requires information about objects in front of its growing tip. Camera images can provide visual information, but detection reliability may be affected by lighting, occlusion, image quality, and differences between the operating environment and the data used to train the pretrained model.
+
+\subsection{Path Planning and Control Integration}
+
+Object detection alone does not determine a safe movement path. The detected objects must be interpreted by a path-planning component, which then generates a desired direction for the steering controller. The steering controller must translate that direction into suitable tendon commands while the pneumatic controller manages growth.
+
+\subsection{Software and Hardware Coordination}
+
+The camera, object detection model, path planner, servo motors, and pneumatic components operate as distinct functional elements. A modular ROS 2 architecture is needed to organize communication between these elements and simplify integration, testing, and debugging.
+
+\section{Proposed Solution}
+
+The proposed solution is a modular pneumatic tip-growing robot that combines forward extension, tendon-based steering, and visual perception.
+
+The pneumatic subsystem supplies controlled air pressure to drive tube eversion. Four servo motors mounted at the base station actuate four axial tendons to steer the growing tip in the horizontal X--Y plane. A camera near the tip captures images of the surrounding environment, and a pretrained YOLO model detects supported object classes.
+
+ROS 2 connects the perception and control components. The object detection output is supplied to the path planner, which determines a desired direction based on the navigation strategy. The steering controller converts the desired direction into four tendon-actuation commands, while the growth controller manages the pneumatic air supply and valve.
+
+The proposed architecture separates perception, path planning, tendon steering, and pneumatic growth control into distinct modules. This structure supports independent development and later integration with the physical robot.
+
+\section{Project Objectives}
+
+The problem is addressed through the following objectives:
+
+\begin{enumerate}
+    \item Design a pneumatic tip-everting mechanism for forward growth.
+    \item Develop a four-tendon steering mechanism using base-mounted servo motors.
+    \item Integrate a tip-mounted camera with a pretrained YOLO object detection model.
+    \item Develop a ROS 2 architecture for connecting visual perception with path planning and control.
+    \item Convert desired steering directions into coordinated tendon commands.
+    \item Integrate pneumatic growth control with the steering system.
+    \item Develop a simulation workflow for examining planned paths and steering commands.
+    \item Establish an experimental framework for evaluating growth, steering, and object detection performance.
+\end{enumerate}
+
+\section{Scope and Limitations}
+
+The project focuses on the mechanical concept, control architecture, visual perception pipeline, and ROS 2 integration of the proposed robot. The use of a pretrained YOLO model provides an initial object detection capability without requiring the immediate training of a new model.
+
+However, the selected model may not recognize every obstacle relevant to the operating environment. Furthermore, two-dimensional bounding boxes do not directly provide accurate obstacle distance or three-dimensional position. Additional sensing or geometric estimation may be necessary for reliable distance-aware navigation.
+
+The relationship between tendon displacement and tip direction must also be established through mechanical analysis and calibration. Pneumatic pressure, membrane properties, friction, and steering response must be evaluated before the robot can be considered suitable for reliable autonomous navigation.
+
+The project therefore establishes a design and integration framework; the actual performance of the complete system must be confirmed through simulation and physical experiments.

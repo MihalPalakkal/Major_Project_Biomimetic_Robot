@@ -1,1 +1,74 @@
-\chapter{Introduction (Background and Motivation for the Work)}
+\chapter{INTRODUCTION}
+
+\section{Background}
+
+Robotics has become an important area of research and development due to its applications in exploration, inspection, navigation, and operation in environments that are difficult for humans or conventional robotic systems to access. Traditional mobile robots generally rely on wheels, tracks, or articulated legs to move through their surroundings. Although these mechanisms are effective in many applications, their movement can be restricted in narrow passages, confined spaces, and environments with complex geometries. These limitations have encouraged research into flexible robotic systems capable of adapting their shape and movement to the surrounding environment.
+
+One promising approach is the development of tip-growing robots. Unlike conventional robots that move their entire body forward, a tip-growing robot advances by extending a flexible body through a process known as eversion. In a pneumatically actuated tip-growing robot, pressurized air drives the eversion of a flexible tube, allowing new sections of the body to extend from the growing tip. This approach can reduce sliding friction along portions of the robot body and may enable navigation through narrow or restricted spaces.
+
+However, forward growth alone does not provide sufficient directional control. A growing robot must also be capable of steering its tip toward a desired direction. To address this requirement, the proposed project incorporates four axial steering tendons arranged around the flexible tube. These tendons are actuated by four servo motors mounted at the base station. By controlling the displacement and tension of the tendons, the robot can direct the growing tip toward different directions in the horizontal X--Y plane.
+
+In addition to mechanical steering, visual perception can improve the robot's ability to interpret its surroundings. A camera mounted near the growing tip can capture images of the environment, while a pretrained You Only Look Once (YOLO) object detection model can identify objects belonging to its supported classes. The detected objects can provide visual information for navigation and potential obstacle-aware path planning.
+
+The Robot Operating System 2 (ROS 2) provides the software framework for integrating camera processing, object detection, path planning, steering control, and pneumatic growth control. Through this integration, the proposed system combines pneumatic actuation, tendon-based steering, and computer vision into a modular robotic architecture.
+
+\section{Motivation for the Work}
+
+The primary motivation for this project is to investigate a robotic system that combines continuous growth with controlled directional movement and camera-assisted perception. A flexible growing robot may be useful in applications where conventional rigid robots encounter difficulties moving through narrow or constrained environments.
+
+Pneumatic actuation provides a mechanism for extending the flexible body, while the four-tendon steering arrangement provides a method for controlling the direction of the growing tip. Locating the servo motors at the base station reduces the mass of the actuation hardware carried by the moving tip and provides convenient access to the motors and their control electronics. However, tendon routing, friction, and coordinated cable payout must be considered to ensure that the steering mechanism does not interfere with continued growth.
+
+Another motivation is the integration of visual perception with robotic control. The tip-mounted camera provides images of the region ahead of the robot. A pretrained YOLO model can process these images to detect recognizable objects and generate bounding boxes, class labels, and confidence scores. This information can then be supplied to a ROS 2 navigation component to support decisions about the robot's direction of movement.
+
+ROS 2 is used to organize the system into separate functional components. This modular approach allows image processing, path planning, servo control, and pneumatic actuation to be developed and tested independently before integration. It also provides a foundation for future improvements, such as feedback-based steering, obstacle-aware path replanning, and more advanced navigation strategies.
+
+\section{Problem Statement}
+
+The main problem addressed in this project is the design of a pneumatically actuated tip-growing robot that can extend its flexible body while controlling the direction of its growing tip. A conventional pneumatic growing tube can extend forward, but without an appropriate steering mechanism, its direction may be difficult to regulate.
+
+The project addresses this limitation by introducing four axial steering tendons controlled by base-mounted servo motors. The system also incorporates a tip-mounted camera and a pretrained YOLO model to identify visible objects in the surrounding environment. ROS 2 is used to connect the perception and navigation components with the steering and pneumatic control systems.
+
+The overall challenge is to coordinate continuous pneumatic growth, tendon movement, visual perception, and path planning while maintaining a mechanically feasible and controllable robot structure. The proposed design and software architecture establish a foundation for investigating these functions through simulation and experimental testing.
+
+\section{Objectives of the Project}
+
+The main objective is to develop a conceptual and implementation framework for a pneumatically actuated, tip-growing robot with tendon-based steering and camera-assisted navigation.
+
+The specific objectives are:
+
+\begin{enumerate}
+    \item To design a flexible pneumatic tip-everting mechanism capable of forward growth.
+    \item To develop a four-tendon steering arrangement for controlling the growing tip in the X--Y plane.
+    \item To position four servo motors at the base station for tendon actuation and controlled cable payout.
+    \item To integrate a camera near the growing tip for capturing images of the surrounding environment.
+    \item To use a pretrained YOLO object detection model to identify objects supported by the selected model.
+    \item To develop a ROS 2 software architecture connecting perception, path planning, steering control, and pneumatic growth control.
+    \item To develop a simulation workflow for representing planned trajectories and evaluating steering commands.
+    \item To establish a basis for future experimental evaluation of growth performance, steering accuracy, and visual detection reliability.
+\end{enumerate}
+
+\section{Scope of the Work}
+
+The scope of this project includes the mechanical design of the pneumatic growing tube, the four-tendon steering mechanism, the base-mounted servo arrangement, and the pneumatic control system. The electronic control architecture includes a suitable microcontroller or hardware interface for servo actuation, pneumatic valve control, and sensor communication.
+
+The perception component focuses on camera image acquisition and object detection using a pretrained YOLO model. The software component uses ROS 2 to organize the image-processing pipeline, path-planning logic, tendon-steering commands, and pneumatic growth commands into separate functional modules.
+
+The proposed system also considers simulation of robot trajectories and the integration of visual information into navigation decisions. The use of a pretrained model avoids the immediate requirement to train a new object detection model, although its suitability for the intended environment must be evaluated.
+
+The project scope does not assume that object detection alone provides accurate three-dimensional obstacle positions. Additional depth sensing, camera calibration, or geometric estimation may be required for distance-aware navigation. Similarly, actual growth performance, steering precision, and obstacle-avoidance capability must be confirmed through implementation and testing rather than assumed from the proposed architecture.
+
+\section{Expected Outcomes}
+
+The expected outcome is a modular design for a pneumatic tip-growing robot that combines forward extension, four-tendon directional steering, and camera-based object detection.
+
+The mechanical design is intended to provide a framework for controlling the growing tip using servo-driven tendons while the pneumatic system supports tube eversion. The software architecture is intended to connect camera images and YOLO detection results with ROS 2 path planning and low-level control.
+
+A simulation environment can be used to examine planned trajectories and steering commands before physical testing. Following implementation, experiments can be conducted to evaluate the system's growth behavior, steering response, detection performance, and integration between the mechanical and software components.
+
+These outcomes provide a basis for further development of flexible growing robots for inspection, exploration, and navigation in constrained environments.
+
+\section{Organization of the Report}
+
+The report is organized into eight main chapters. Chapter 1 introduces the background, motivation, problem statement, objectives, scope, and expected outcomes of the project. Chapter 2 presents the problem statement in greater detail and identifies the engineering challenges addressed by the proposed system. Chapter 3 reviews relevant literature on tip-growing robots, pneumatic actuation, tendon-based steering, computer vision, and robotic navigation.
+
+Chapter 4 describes the image data and preprocessing pipeline associated with the pretrained YOLO model. Chapter 5 explains the overall system workflow, from camera image acquisition and object detection to path planning and actuation. Chapter 6 presents the modular structure of the mechanical, electronic, and software components. Chapter 7 lists the tools, platforms, libraries, and technologies used in the project. Chapter 8 summarizes the work, discusses its limitations, and identifies possible directions for future development. The report concludes with references to the research papers and technical documentation used.

@@ -32,8 +32,7 @@
 
 % Hyperref – should be loaded last (except bookmark)
 \usepackage{hyperref}
-\usepackage{pdfpages}
-\usepackage{bookmark}            % improved PDF bookmarks
+
 
 % ============ GEOMETRY & PAGE LAYOUT ============
 \geometry{
@@ -140,15 +139,16 @@
 }
 
 % ============ SECTION HEADING FORMATS ============
+\renewcommand{\chaptertitlename}{CHAPTER}
 \titleformat{\chapter}[display]
-  {\normalfont\bfseries\fontsize{14}{16}\selectfont}{\chaptertitlename\ \thechapter}{20pt}{}
+  {\normalfont\bfseries\fontsize{16}{20}\selectfont}{\chaptertitlename\ \thechapter}{20pt}{}
 \titlespacing*{\chapter}{0pt}{-20pt}{30pt}
 \titleformat{\section}
-  {\normalfont\bfseries\fontsize{12}{14}\selectfont}{\thesection}{1em}{}
+  {\normalfont\bfseries\fontsize{16}{20}\selectfont}{\thesection}{1em}{}
 \titleformat{\subsection}
-  {\normalfont\bfseries\fontsize{12}{14}\selectfont}{\thesubsection}{1em}{}
+  {\normalfont\bfseries\fontsize{14}{18}\selectfont}{\thesubsection}{1em}{}
 \titleformat{\subsubsection}
-  {\normalfont\bfseries\fontsize{12}{14}\selectfont}{\thesubsubsection}{1em}{}
+  {\normalfont\bfseries\fontsize{12}{15}\selectfont}{\thesubsubsection}{1em}{}
 
 % ============ HYPERREF SETUP ============
 \hypersetup{
@@ -157,26 +157,23 @@
     filecolor=black,
     urlcolor=black,
     citecolor=black,
-    pdftitle={AI-Integrated Washing Machine},
+    pdftitle={Robo-Root},
     pdfpagemode=FullScreen,
+    plainpages=false,
 }
 
 % ============ TABLE OF CONTENTS DEPTH ============
 \setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}
 
-% ============ TOC/LOF/LOT CUSTOMIZATION ============
-\setlength{\cftfignumwidth}{6em}
+% ============ TOC/LOF CUSTOMIZATION ============
+\setlength{\cftfigindent}{0pt}
+\setlength{\cftfignumwidth}{6.5em}
+\renewcommand{\cftdotsep}{1.5}
+\cftsetrmarg{3.5em}
 \renewcommand{\cftafterloftitle}{%
   \\[1em]
-  \noindent\makebox[\cftfignumwidth][l]{Figure No.}\hfill Figure Name\hfill Page No.\par
-  \vspace{0.5em}
-}
-
-\setlength{\cfttabnumwidth}{6em}
-\renewcommand{\cftafterlottitle}{%
-  \\[1em]
-  \noindent\makebox[\cfttabnumwidth][l]{Table No.}\hfill Table Name\hfill Page No.\par
+  \noindent\makebox[\cftfignumwidth][l]{Figure No.}Figure Name\hfill Page No.\par
   \vspace{0.5em}
 }
 
@@ -189,7 +186,7 @@
 }
 \fancypagestyle{reportstyle}{
     \fancyhf{}
-    \fancyhead[L]{AI-Integrated Washing Machine}
+    \fancyhead[L]{Robo-Root}
     \fancyhead[R]{}
     \renewcommand{\headrulewidth}{0.5pt}
     \renewcommand{\footrulewidth}{0.4pt}
@@ -216,6 +213,7 @@
 
 % ============ BEGIN DOCUMENT ============
 \begin{document}
+\pagenumbering{alph}
 
 \include{title}
 \include{certificate}
@@ -234,20 +232,17 @@
     \fancyfoot[C]{\thepage}
 }
 \include{declaration}
+\include{acknowledgement}
 \include{abstract}
 
 \pagestyle{footeronly}
-\tableofcontents
 \clearpage
 \phantomsection
 \addcontentsline{toc}{chapter}{List of Figures}
 \listoffigures
 \clearpage
-\phantomsection
-\addcontentsline{toc}{chapter}{List of Tables}
-\listoftables
-\clearpage
 
+\tableofcontents
 \clearpage
 \pagestyle{reportstyle}
 \pagenumbering{arabic}

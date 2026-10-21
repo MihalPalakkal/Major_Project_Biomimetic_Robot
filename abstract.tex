@@ -1,9 +1,20 @@
-\chapter*{}
+\clearpage
+\phantomsection
 \thispagestyle{footeronly}
 \addcontentsline{toc}{chapter}{ABSTRACT}
 \begin{center}
-{\Large \textbf{ABSTRACT}}
+{\fontsize{16}{20}\selectfont \textbf{ABSTRACT}}
 \end{center}
 
-\vspace{0.5cm}
-\noindent
+\vspace{0.4cm}
+\justifying
+
+Plant-root-inspired tip-growing robots offer a promising approach for accessing confined environments by extending their bodies through tip eversion rather than pushing an entire rigid structure forward. This project focuses on the design and development of a pneumatic tip-growing robot that integrates controlled growth, tendon-based steering, and camera-based object detection within a modular robotic system. The primary objective is to develop a laboratory prototype capable of controlled deployment and directional movement, with particular consideration given to operation in loose, dry, noncohesive granular material.
+
+The proposed mechanical system uses pneumatic pressure to drive the eversion of a flexible tubular body. Four steering tendons arranged around the robot provide directional control, actuated by four servo motors mounted at the base station. A camera positioned near the growing tip captures images of the surrounding environment. These images are processed using a pretrained You Only Look Once (YOLO) object detection model to identify recognizable objects and potential obstacles. OpenCV can support image acquisition and preprocessing, while the Robot Operating System 2 (ROS 2) framework provides the software architecture for coordinating perception, navigation logic, and hardware-control components.
+
+The system is organized into modular subsystems for mechanical growth, pneumatic actuation, tendon steering, visual perception, electronic control, and software integration. This modular approach supports the independent development and integration of the robot's major functions. The design is informed by a review of existing research on soft growing robots, including pneumatic eversion, steering mechanisms, retrieval techniques, working-channel design, sensing, and control. The literature indicates that reliable operation depends on the interaction between growth, steering, payload integration, and recovery, particularly when the robot operates in a constrained environment.
+
+The project is intended to establish an integrated laboratory prototype and provide a basis for evaluating its deployment, steering, object-detection performance, and retrieval reliability under defined test conditions. Experimental assessment should measure growth distance, deployment time, steering accuracy, complete deployment-and-retrieval success, and relevant pneumatic operating parameters. As experimental results have not yet been established, the proposed system's performance and suitability for autonomous navigation remain to be validated. The project aims to demonstrate a practical integration of pneumatic tip growth, tendon-based steering, and vision-assisted robotic control, providing a foundation for future development of soft robots for confined-space access and granular-environment exploration.
+
+\clearpage

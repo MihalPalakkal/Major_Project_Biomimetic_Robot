@@ -1,1 +1,138 @@
-\chapter{Literature Review}
+\chapter{LITERATURE REVIEW}
+
+\section{Introduction}
+
+Plant-root-inspired growing robots have attracted research interest because of their ability to extend through confined spaces using flexible bodies. Unlike conventional mobile robots, tip-growing robots advance by everting or extending a flexible structure at the growing tip. Their potential applications include inspection, exploration, and operation in environments where conventional rigid robotic systems may face movement constraints.
+
+Several approaches have been investigated to improve the growth, steering, sensing, and retrieval capabilities of these robots. These include pneumatic eversion, flexible structural backbones, internal working channels, magnetic actuation, shape sensing, physics-based simulation, and learning-based locomotion.
+
+This chapter reviews ten IEEE publications relevant to soft growing robots and related burrowing systems. The studies are organized according to their principal contributions, experimental findings, and limitations. Their findings provide a foundation for identifying suitable mechanical and control approaches for the proposed pneumatic tip-growing robot with four-tendon steering, camera-based perception, and ROS 2 integration.
+
+\section{Review of Existing Literature}
+
+\subsection{Large-Scale Vine Robots for Industrial Inspection}
+
+Heap et al.~[1] investigated large-scale vine robots for industrial inspection using tip-growing and retractable structures. Their robot demonstrated growth and retraction over substantial distances in laboratory experiments. The study also examined traversal through an industrial pipe route and the effect of carrying a sensor mount.
+
+The results showed that the robot could traverse a 24~m pipe route without its sensor mount. With the mount installed, it delivered video through the horizontal section but stalled at an elbow. Pressure-sensor drift also limited validation of the complete model.
+
+This study demonstrates the potential of tip-growing robots for inspection and highlights the importance of testing the complete system with its intended payload. For the proposed project, this finding supports evaluating the camera, wiring, and other tip-mounted components as part of the integrated robot rather than testing only the empty flexible tube.
+
+\subsection{Material Scrunching for Internal Working Channels}
+
+Girerd et al.~[2] introduced a material-scrunching approach to create working channels within miniaturized vine-inspired robots. The approach reduces friction associated with material moving through the internal channel and enables continuous access toward the growing tip.
+
+Their reported prototype achieved 1,500~mm of growth at 55~kPa, compared with 36~mm for the standard design under the same pressure conditions. The study demonstrates that the internal arrangement of the flexible material can significantly influence growth performance.
+
+However, the study also identified limitations related to the geometry of the tip, working-channel clearance, and the need to push the channel during operation. Retraction and more repeatable scrunching remained areas for further development.
+
+This work highlights the importance of minimizing friction and maintaining sufficient internal clearance. These considerations are relevant when designing tendon routing, sensor wiring, and pneumatic connections for a growing robot.
+
+\subsection{Retractable Soft Growing Robot with a Flexible Backbone}
+
+Pi et al.~[3] investigated a retractable soft growing robot incorporating a flexible backbone to provide axial support during retrieval. The backbone was intended to reduce buckling as the robot was pulled back through its deployed path.
+
+The study reported that all 80 attempts in the straight-length experiment avoided buckling when the backbone was used. However, retrieval through curved paths still produced base crumpling and path deviation due to friction. The backbone also introduced limitations in reach and housing size.
+
+The findings demonstrate that a mechanism that performs well along a straight path may behave differently when the robot encounters bends. For the proposed system, this suggests that steering performance should be evaluated under different path geometries and that the mechanical design should account for friction and deformation during both deployment and retrieval.
+
+\subsection{Pneumatic Self-Retraction of Soft Growing Robots}
+
+Kim et al.~[4] proposed a self-retraction mechanism using a pressurized retraction channel and sealing ring while depressurizing the main robot body. The approach was designed to improve retrieval compared with conventional tail-pulling methods.
+
+In the reported tests, the mechanism achieved successful retraction in all ten trials at each tested angle up to 90$^\circ$, and in seven of ten trials at 120$^\circ$. Conventional tail pulling performed less effectively at the tested bends. The study also demonstrated the integration of wires, a tip mount, and steering.
+
+Despite these improvements, the mechanism remained susceptible to wrinkles, channel blockage, and restrictions caused by narrow gaps. The results emphasize that reliable retrieval requires careful consideration of channel geometry and sealing arrangements.
+
+For the proposed pneumatic robot, this work provides useful background on the interaction between the main growth chamber, internal channels, and additional components. It also shows why deployment and retrieval should be treated as separate performance requirements.
+
+\subsection{Inflatable Structures for Securing Working Channels}
+
+Seo et al.~[5] presented an inflatable-structure-based mechanism for maintaining a working channel within a soft growing robot. The design used multiple sub-vines to inflate and advance a sleeve around an atmospheric-pressure channel.
+
+The researchers demonstrated tool transfer, steering, and growth. However, the measured channel diameter was smaller than its designed value, and the tests showed pressure-dependent friction in larger pipes. The presence of stiff tools also affected steering, while the additional structural components increased system complexity.
+
+This research highlights a design trade-off between providing sufficient space for sensors or tools and maintaining the flexibility required for steering. For the proposed project, the camera wiring, tendon routing, and pneumatic pathway should therefore be arranged so that they do not unnecessarily increase the stiffness or minimum passage size of the robot.
+
+\subsection{Magnetic Soft Growing Robot with Shape Sensing}
+
+Calm\'e et al.~[6] developed a magnetoelastic soft growing robot that used magnetic actuation, a camera, Hall-effect sensors, and a sampling brush. The system demonstrated controlled growth and shape reconstruction at a small scale.
+
+A sensor stream sampled at 500~Hz supported planar shape reconstruction with a reported root-mean-square error of 2.7~mm. The study also demonstrated an ex vivo sampling application. However, the mechanism required a strong external magnetic field and close proximity to the external magnet. The reported sensing performance was limited to the evaluated configuration, and retraction was not studied.
+
+This work demonstrates the value of sensing and feedback for understanding the shape of a growing robot. Although the proposed project uses pneumatic actuation and tendon steering rather than magnetic actuation, the general importance of measuring robot motion is relevant. Camera observations and, where appropriate, an IMU may support future feedback-based steering. Their accuracy and suitability must be established experimentally.
+
+\subsection{Survey of Tip-Growing Robots}
+
+Al Harthy et al.~[7] presented a field survey of tip-growing robots covering fabrication, growth mechanisms, steering, sensing, control, modeling, and applications. The review examined 158 relevant manuscripts and organized the major approaches used in the field.
+
+The survey provides a broad foundation for understanding the different design choices available for growing robots. It also shows that tip growth is an established research area, with multiple approaches already developed for steering, sensing, and retrieval.
+
+For the proposed project, this survey is useful for positioning the design within the existing field. The contribution should not be framed as the first robot capable of tip growth or steering. Instead, the project should focus on its particular integration of pneumatic growth, four-tendon steering, visual object detection, and ROS 2-based control, with any claimed benefits evaluated through implementation and testing.
+
+\subsection{Autonomous Burrowing and Retrieval of Soft Robotic Anchors}
+
+Li et al.~[8] investigated burrowing and retrieval of soft robotic anchors in loosely packed glass beads. Their design used vibration and changes in internal volume to influence movement and anchoring performance.
+
+The study demonstrated downward movement and upward retrieval under specific laboratory conditions. However, the experiments used tether compensation, and downward and upward movement were evaluated separately. The addition of pouches substantially slowed the downward motion in the tested configuration.
+
+The findings illustrate the importance of considering the surrounding medium and external assistance when evaluating burrowing performance. They also show that a successful downward movement does not automatically demonstrate reliable retrieval or completion of a full operating cycle.
+
+Although the proposed project focuses on pneumatic tip growth and tendon steering, this study provides useful context for future testing in granular environments. Such testing would require clearly defined substrate properties, repeatable preparation conditions, and separate measurements of deployment and recovery.
+
+\subsection{Physics-Grounded Differentiable Simulation for Soft Growing Robots}
+
+Chen et al.~[9] developed a physics-grounded differentiable simulation approach using a nonlinear stiffness model that accounts for wrinkling. The model was combined with a batched simulation of a growing chain of links and evaluated using physical demonstrations in multiple environments.
+
+The results supported parameter fitting and comparison with unseen test configurations. However, the simulation remained computationally demanding, and high stiffness could cause instability. The planar contact formulation also did not model granular interactions or air fluidization.
+
+This research demonstrates the value of calibrating a simulation model against physical observations rather than relying solely on an idealized geometric representation. For the proposed project, simulation can support path visualization and steering development, but the behavior of the flexible body and tendon mechanism should be validated against physical measurements when available.
+
+\subsection{Machine Learning-Driven Burrowing with a Snake-Like Robot}
+
+Even et al.~[10] investigated learning-driven locomotion using a modular snake-like robot. Their approach used experimental runs to generate data and an optimization process to produce a sequence of motor positions for reaching a target in a controlled test environment.
+
+The reported experiments used packing peanuts and a magnet array for height estimation. The robot reached the specified target height within the reported tolerance in the evaluated trials. However, the optimization process required substantial computation, and transfer to natural soil was not established.
+
+This study illustrates how data-driven methods can be used to develop robot movement strategies under specific experimental conditions. However, the system differs from the proposed pneumatic tip-growing robot in its locomotion mechanism and learning approach.
+
+The proposed project instead uses a pretrained YOLO model for visual object detection. YOLO provides object classes and bounding boxes; it does not directly generate a validated steering trajectory. Additional path-planning and control logic is required to translate the detection results into robot movement commands.
+
+\section{Comparative Analysis of the Reviewed Papers}
+
+The ten publications address different aspects of growing and burrowing robotics. Their findings should be compared according to their intended tasks and experimental conditions rather than ranked using a single performance measure.
+
+The studies by Heap et al.~[1], Girerd et al.~[2], Pi et al.~[3], Kim et al.~[4], and Seo et al.~[5] primarily highlight the relationships among growth, internal access, steering, payload integration, and retrieval. Calm\'e et al.~[6] and Al Harthy et al.~[7] provide insights into sensing and the broader design landscape. Li et al.~[8] investigate movement and anchoring in granular media, while Chen et al.~[9] and Even et al.~[10] examine simulation and learning-based movement strategies.
+
+Several common engineering considerations emerge from this comparison:
+
+\begin{enumerate}
+    \item \textbf{Mechanical integration:} Adding a camera, wiring, tools, or other payloads can affect growth and path completion.
+    \item \textbf{Steering and curvature:} A mechanism that performs well on a straight path may encounter friction, deformation, or retrieval problems on curved paths.
+    \item \textbf{Internal clearance:} Additional channels and components can improve access but may increase friction, complexity, or minimum passage size.
+    \item \textbf{Sensing and feedback:} Sensor measurements and model predictions should be validated against independent observations.
+    \item \textbf{Simulation and experimental testing:} Simulation is useful for design and planning, but its conclusions are limited by the accuracy of the model and the conditions represented.
+    \item \textbf{Environmental dependence:} Results obtained in pipes, glass beads, packing peanuts, or other controlled environments cannot automatically be generalized to natural soil or different operating conditions.
+\end{enumerate}
+
+These findings suggest that the mechanical design, sensing arrangement, and control system should be evaluated as an integrated system rather than as isolated components.
+
+\section{Research Gaps and Motivation for the Proposed Project}
+
+The reviewed literature demonstrates that tip-growing mechanisms, tendon or other steering approaches, sensing, and retrieval strategies have already been investigated. Therefore, the research gap for the proposed project should be defined around the particular system architecture and its evaluation, rather than claiming that these general capabilities are absent from previous work.
+
+The first gap concerns the integration of pneumatic growth with four-tendon steering. The proposed design requires coordinated tendon movement while the flexible tube continues to evert. The relationship between servo displacement, tendon tension, and actual tip direction must be established through mechanical design and calibration.
+
+The second gap concerns visual perception and navigation. A tip-mounted camera and pretrained YOLO model can identify objects belonging to the model's supported classes. However, the detection results must be connected to a path planner and steering controller before they can influence the robot's movement. Bounding boxes alone do not establish obstacle distance or guarantee a collision-free trajectory.
+
+The third gap concerns integrated system validation. The reviewed studies demonstrate capabilities under different mechanical arrangements and experimental conditions, but their numerical results are not directly comparable. The proposed project therefore needs its own evaluation procedure to measure steering response, detection performance, and the behavior of the integrated control architecture.
+
+These gaps motivate the development of a modular ROS 2 architecture connecting camera acquisition, object detection, path planning, four-tendon steering, and pneumatic growth control. The proposed contribution is the design and evaluation of this particular integration, subject to the capabilities demonstrated by the completed prototype.
+
+\section{Summary}
+
+This chapter reviewed ten IEEE publications covering large-scale vine robots, internal working channels, retrieval mechanisms, magnetic shape sensing, the broader tip-growing robot field, granular burrowing, physics-based simulation, and learning-driven locomotion.
+
+The literature indicates that growth, steering, payload integration, sensing, and retrieval are closely related engineering challenges. It also shows that performance depends on the robot's geometry, operating pressure, path curvature, surrounding medium, and sensing arrangement.
+
+Based on these findings, the proposed project combines pneumatic tip growth with four-tendon steering, base-mounted servo motors, camera-based object detection using a pretrained YOLO model, and ROS 2-based control. The objective is to develop a modular system architecture and evaluate its behavior through appropriate simulation and experimental testing. The project should report only those performance claims that are supported by its own implementation and results.
