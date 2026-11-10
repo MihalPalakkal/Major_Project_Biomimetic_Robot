@@ -1,7 +1,5 @@
 \chapter{SYSTEM WORKFLOW}
 
-\section{Introduction}
-
 The proposed pneumatic tip-growing robot integrates a flexible eversion mechanism, four-tendon steering, pneumatic actuation, camera-based object detection, and ROS 2-based control. The system workflow describes how these components interact to support forward growth and directional steering.
 
 The overall system is divided into mechanical, pneumatic, perception, planning, and control functions. The pneumatic subsystem supports the extension of the flexible tube, while four servo motors located at the base station control the steering tendons. A camera positioned near the growing tip captures images of the surrounding environment, and a pretrained YOLO model processes the images to detect objects belonging to its supported classes.
@@ -50,15 +48,15 @@ The perception subsystem does not independently determine a safe trajectory. Ins
 
 \section{ROS 2 Path Planning and Control}
 
-ROS 2 connects the perception, planning, and actuation components through a modular software architecture.
+ROS 2 connects the perception, planning, and actuation components through a modular, deterministic software architecture. Rather than executing as a monolithic sequential script, the control framework operates as a multi-threaded computational graph managed by a ROS 2 Multi-Threaded Executor. This decouples computationally intensive neural network inference from high-frequency, time-critical actuator control loops.
 
-The camera node publishes image messages, and the object detection node processes the incoming images. The path planner receives the detection information and determines a desired direction or path based on the available environmental representation and navigation logic.
+The camera node continuously captures and streams video frames at 30~Hz. Upon arrival of a new frame, the object detection node processes the image using the pretrained YOLO model, extracting 2D bounding boxes, semantic classes, and confidence scores. The path-planning node subscribes to these detection arrays and queries the \texttt{tf2} coordinate transformation buffer to relate detected obstacles to the robot's moving tip frame.
 
-The steering controller converts the desired direction into commands for the four tendon actuators. The servo-control interface sends these commands to the base-mounted servo motors through the embedded hardware controller.
+Based on the spatial distribution of detected obstacles, the planner computes an obstacle-free heading vector in terms of horizontal bending angles $(\theta_x, \theta_y)$ at an update rate of 10--20~Hz. The steering controller converts these angular targets into continuous length setpoints $(\Delta l_1, \Delta l_2, \Delta l_3, \Delta l_4)$ for the four tendons via an inverse kinematics mapping. These setpoints are published to the microcontroller interface at a high-frequency control loop (50--100~Hz) to ensure smooth, jitter-free servo motion.
 
-A separate growth-control function manages the pneumatic valve and air supply. Pressure feedback, when available, can be used to monitor the pneumatic subsystem and support appropriate control or safety responses.
+Simultaneously, the growth-control node manages the pneumatic subsystem by monitoring chamber pressure feedback. It regulates the solenoid valve duty cycle to maintain stable eversion while synchronizing the servo spool payout rate with forward growth speed. If a tendon becomes too tight, growth is temporarily throttled; if excess slack is detected, spools are tensioned to maintain positive contact.
 
-The separation of these functions simplifies software development and allows the perception, planning, steering, and growth components to be tested independently.
+A watchdog monitoring thread continuously checks heartbeat signals across all active ROS 2 nodes and the microcontroller bridge. In the event of frame loss, node failure, or unexpected pressure surges, the watchdog triggers a graceful emergency stop, immediately venting pneumatic pressure and holding tendon positions.
 
 Figure~\ref{fig:system_architecture} illustrates the overall ROS~2 software architecture and hardware interface for the proposed growing robot.
 

@@ -1,7 +1,5 @@
 \chapter{INTRODUCTION}
 
-\section{Background}
-
 Robotics has become an important area of research and development due to its applications in exploration, inspection, navigation, and operation in environments that are difficult for humans or conventional robotic systems to access. Traditional mobile robots generally rely on wheels, tracks, or articulated legs to move through their surroundings. Although these mechanisms are effective in many applications, their movement can be restricted in narrow passages, confined spaces, and environments with complex geometries. These limitations have encouraged research into flexible robotic systems capable of adapting their shape and movement to the surrounding environment.
 
 One promising approach is the development of tip-growing robots. Unlike conventional robots that move their entire body forward, a tip-growing robot advances by extending a flexible body through a process known as eversion. In a pneumatically actuated tip-growing robot, pressurized air drives the eversion of a flexible tube, allowing new sections of the body to extend from the growing tip. This approach can reduce sliding friction along portions of the robot body and may enable navigation through narrow or restricted spaces.
@@ -10,7 +8,7 @@ However, forward growth alone does not provide sufficient directional control. A
 
 In addition to mechanical steering, visual perception can improve the robot's ability to interpret its surroundings. A camera mounted near the growing tip can capture images of the environment, while a pretrained You Only Look Once (YOLO) object detection model can identify objects belonging to its supported classes. The detected objects can provide visual information for navigation and potential obstacle-aware path planning.
 
-The Robot Operating System 2 (ROS 2) provides the software framework for integrating camera processing, object detection, path planning, steering control, and pneumatic growth control. Through this integration, the proposed system combines pneumatic actuation, tendon-based steering, and computer vision into a modular robotic architecture.
+The Robot Operating System 2 (ROS 2) provides the decentralized middleware and computational graph framework for integrating camera processing, object detection, path planning, steering control, and pneumatic growth control. By leveraging the Data Distribution Service (DDS) communication standard, ROS 2 enables modular publish--subscribe node interactions, standardized message interfaces, and deterministic multi-threaded execution, combining pneumatic actuation, tendon-based steering, and computer vision into a cohesive robotic architecture.
 
 \section{Motivation for the Work}
 
@@ -20,7 +18,7 @@ Pneumatic actuation provides a mechanism for extending the flexible body, while 
 
 Another motivation is the integration of visual perception with robotic control. The tip-mounted camera provides images of the region ahead of the robot. A pretrained YOLO model can process these images to detect recognizable objects and generate bounding boxes, class labels, and confidence scores. This information can then be supplied to a ROS 2 navigation component to support decisions about the robot's direction of movement.
 
-ROS 2 is used to organize the system into separate functional components. This modular approach allows image processing, path planning, servo control, and pneumatic actuation to be developed and tested independently before integration. It also provides a foundation for future improvements, such as feedback-based steering, obstacle-aware path replanning, and more advanced navigation strategies.
+To unify these heterogeneous mechanical, electronic, and computational subsystems, the Robot Operating System 2 (ROS 2) was adopted as the core software integration framework. Entering into this project, ROS 2 was a new and advanced robotics technology with which the team actively familiarised itself. The framework replaces disjointed, monolithic scripts with an industry-standard, modular architecture where image processing, path planning, servo control, and pneumatic actuation execute as independent, concurrent nodes. This modularity not only ensures deterministic real-time communication and fault isolation, but also provides an extensible foundation for future advancements such as dynamic trajectory replanning and closed-loop feedback steering.
 
 \section{Problem Statement}
 

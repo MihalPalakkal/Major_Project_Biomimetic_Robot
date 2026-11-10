@@ -167,10 +167,13 @@
 \setcounter{secnumdepth}{3}
 
 % ============ TOC/LOF CUSTOMIZATION ============
+\renewcommand{\contentsname}{CONTENTS}
 \setlength{\cftfigindent}{0pt}
 \setlength{\cftfignumwidth}{6.5em}
 \renewcommand{\cftdotsep}{1.5}
 \cftsetrmarg{3.5em}
+\renewcommand{\cfttoctitlefont}{\normalfont\bfseries\fontsize{16}{20}\selectfont}
+\renewcommand{\cftloftitlefont}{\normalfont\bfseries\fontsize{16}{20}\selectfont}
 \renewcommand{\cftafterloftitle}{%
   \\[1em]
   \noindent\makebox[\cftfignumwidth][l]{Figure No.}Figure Name\hfill Page No.\par
@@ -238,12 +241,12 @@
 
 \pagestyle{footeronly}
 \clearpage
+\tableofcontents
+\clearpage
+
 \phantomsection
 \addcontentsline{toc}{chapter}{List of Figures}
 \listoffigures
-\clearpage
-
-\tableofcontents
 \clearpage
 \pagestyle{reportstyle}
 \pagenumbering{arabic}

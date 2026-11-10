@@ -1,29 +1,83 @@
 \chapter{TOOLS USED}
 
-\section{Introduction}
-
 The development of the proposed plant-root-inspired pneumatic tip-growing robot requires a combination of mechanical components, pneumatic actuators, electronic control hardware, computer vision, and robotics software. These tools work together to enable pneumatic growth, directional steering, environmental perception, and coordination between the robot's hardware and software components.
 
 The tools are selected according to their roles in mechanical construction, image processing, object detection, and system integration. The final selection of hardware specifications and software versions should be based on the implemented system.
 
 \section{Software Tools}
 
-\subsection{Robot Operating System 2 (ROS 2)}
+\subsection{Robot Operating System (ROS / ROS 2)}
 
-ROS 2 is intended to serve as the main software integration framework for the proposed robot. It provides a modular architecture in which separate software components can communicate through nodes and communication interfaces. The framework can be used to connect camera acquisition, object detection, navigation logic, steering control, and pneumatic actuation~[11].
+The Robot Operating System (ROS) is an open-source, flexible software middleware framework designed to simplify the construction of robust, modular robotic platforms. Rather than operating as a conventional hardware-level operating system (such as Linux or Windows) that directly schedules CPU processes and handles peripheral hardware interrupts, ROS functions as a robotic middleware or meta-operating system. It provides structured software services including hardware abstraction, low-level device control, standard implementations of core robotic algorithms, inter-process communication, package management, and an extensive suite of diagnostic and visualization tools.
 
-In the proposed system, ROS 2 may coordinate the following functions:
+Entering into this project, ROS 2 was a new technology that the project team had to learn and actively familiarise itself with. Integrating a plant-root-inspired tip-growing robot requires harmonizing disparate engineering domains: pneumatic pressure regulation, four-tendon antagonistic kinematics, high-frequency servo PWM control, deep-learning-based visual object detection, and spatial path planning. Navigating this multi-disciplinary complexity demanded a software framework that could decouple these functional modules while maintaining deterministic communication. Familiarising ourselves with ROS 2 provided the foundational architecture required to bring these independent mechanical, electronic, and algorithmic components into a cohesive, synchronized system~[11], [15].
+
+\subsubsection{Why ROS 2? Architectural Motivation and Justification}
+Selecting the central software architecture was one of the critical decisions in the project. Several conventional approaches were evaluated, and the rationale for adopting ROS 2 is detailed below:
+
+\begin{enumerate}
+    \item \textbf{Failure of Monolithic Software Architectures:} A basic approach in student prototypes is to construct a single monolithic script (e.g., in Python or C++) that sequentially captures camera frames, executes YOLO inference, calculates inverse tendon lengths, reads pressure sensors, and transmits serial servo commands. However, such a monolithic loop suffers from severe blocking vulnerabilities. If YOLO inference experiences temporary latency (e.g., dropping from 30~ms to 100~ms during a dense visual scene), the entire execution loop freezes. In a pneumatically driven tip-growing robot, even a momentary pause in tendon payout while tube eversion continues can lead to excessive tension, structural buckling, or catastrophic tube tearing. ROS 2 prevents this failure mode by executing perception, kinematics, growth management, and serial communication in isolated, concurrently running nodes managed by a multi-threaded executor.
+    
+    \item \textbf{Computational Inadequacy of Standalone Microcontrollers:} Microcontrollers such as the ESP32 or Arduino are well suited for precise PWM pulse generation and low-level digital I/O. However, they lack the multi-core processing power, GPU acceleration, and memory bandwidth necessary to host deep convolutional neural networks (such as YOLO), maintain high-bandwidth video streams, and evaluate 3D coordinate transformation trees. ROS 2 enables a natural hierarchical split: resource-heavy deep learning and path planning execute on a host computer (or single-board computer), while time-critical physical actuation runs on the microcontroller, seamlessly linked via the Micro-ROS bridge.
+    
+    \item \textbf{Evolution and Superiority of ROS 2 over ROS 1:} The original ROS 1 architecture depended entirely on a centralized master node (\texttt{roscore}) to coordinate node registration and message routing. If \texttt{roscore} failed, the entire robotic computational graph crashed. Furthermore, ROS 1 lacked deterministic real-time scheduling, lacked security protocols, had limited cross-platform portability, and required brittle third-party serial bridges (\texttt{rosserial}) prone to packet loss. ROS 2 resolves all of these limitations by building upon the industry-standard Data Distribution Service (DDS) protocol, eliminating the central master in favor of decentralized peer-to-peer discovery, supporting real-time deterministic execution, and introducing native microcontroller integration.
+\end{enumerate}
+
+\subsubsection{Team Familiarisation and Practical Learning Curve}
+Adopting ROS 2 required the project team to undergo a dedicated learning curve to transition from traditional procedural programming to distributed robotics software engineering. Key concepts mastered during the project include:
 
 \begin{itemize}
-    \item Receiving images from the camera.
-    \item Passing images to the object detection component.
-    \item Receiving and distributing object detection results.
-    \item Supporting navigation and steering decisions.
-    \item Communicating control commands to the hardware interface.
-    \item Coordinating pneumatic growth and tendon-based steering.
+    \item \textbf{Workspace Architecture and Build Systems:} Learning the standard ROS 2 workspace structure (\texttt{colcon\_ws/src}), structuring modular packages using \texttt{ament\_python} and \texttt{ament\_cmake}, and orchestrating multi-package automated builds with the \texttt{colcon} utility.
+    \item \textbf{Custom Interface Generation:} Defining and building custom ROS 2 messages, services, and actions (e.g., custom tendon displacement arrays and eversion state status messages) that enforce strict data typing across all communicating nodes.
+    \item \textbf{Launch Orchestration:} Developing Python-based launch files (\texttt{launch.py}) that automate the parameterized initialization of multiple nodes, sensor drivers, coordinate transform publishers, and safety watchdogs with a single command.
+    \item \textbf{Client Libraries (\texttt{rclpy} and \texttt{rclcpp}):} Leveraging Python's client library (\texttt{rclpy}) to interface seamlessly with modern AI libraries (PyTorch, Ultralytics YOLO, and OpenCV), while retaining the capability to implement performance-critical kinematic loops in C++ (\texttt{rclcpp}).
 \end{itemize}
 
-The final implementation should specify the ROS 2 distribution, node names, topic names, and message types used by the system. These details depend on the software configuration selected for the project.
+\subsubsection{Core Features and Communication Paradigms of ROS 2}
+The ROS 2 architecture provides four distinct communication paradigms that map directly onto the requirements of the growing robot system:
+
+\begin{itemize}
+    \item \textbf{Topics (Publish--Subscribe Model):} Topics provide asynchronous, many-to-many communication channels suitable for high-throughput streaming data. In the proposed system, raw video frames captured at the growing tip are published over \texttt{/camera/image\_raw} using standard \texttt{sensor\_msgs/msg/Image} formats, while detected object bounding boxes and labels are published onto \texttt{/detections/bounding\_boxes} using \texttt{vision\_msgs/msg/Detection2DArray}.
+    
+    \item \textbf{Services (Request--Response Model):} Services provide synchronous, two-way client--server interactions for episodic or state-changing commands. Services are utilized in Robo-Root for operations such as zeroing the tendon servo drums, toggling the pneumatic solenoid valve state, resetting path waypoints, or requesting camera recalibration routines.
+    
+    \item \textbf{Actions (Goal--Feedback--Result Model):} Actions provide an asynchronous, preemptible communication mechanism specifically designed for long-duration robotic tasks. An action client dispatches a goal, the action server provides continuous periodic feedback during execution, and eventually returns a final result status. Actions are ideally suited for commanding tip-growing navigation, such as directing the robot to evert forward by 25~cm along a specified heading, with the critical capability to preempt or cancel the operation immediately if an unforeseen obstacle is detected by the vision node.
+    
+    \item \textbf{Parameters (Dynamic Reconfiguration):} Parameters are node-level configuration variables that can be inspected, validated, and updated dynamically at runtime without restarting the node. This enables live tuning of YOLO confidence thresholds, servo angular velocity limits, PID gains, and pneumatic chamber pressure limits.
+\end{itemize}
+
+\subsubsection{Quality of Service (QoS) Engine}
+Unlike generic network protocols, ROS 2 incorporates a configurable Quality of Service (QoS) engine governed by the DDS layer. This allows the development team to tailor communication policies to the specific physical characteristics of each subsystem:
+
+\begin{itemize}
+    \item \textbf{Reliability Policy:} The \texttt{Best Effort} policy is applied to high-bandwidth sensory streams such as the camera video feed, ensuring minimal transmission latency by prioritizing real-time frame rates over occasional packet drops. Conversely, the \texttt{Reliable} policy is enforced for critical actuation commands (servo angular targets, solenoid triggers, and emergency stop signals), guaranteeing that every command packet is acknowledged and retransmitted if dropped.
+    \item \textbf{Durability Policy:} The \texttt{Volatile} policy is applied to live sensor streams, ensuring nodes only receive fresh data. In contrast, the \texttt{Transient Local} (latched) policy is applied to static configuration topics and coordinate frame trees, ensuring that newly initialized visualization or planning nodes immediately receive the current system state upon startup.
+    \item \textbf{History and Depth:} Prevents message queue overflow and memory starvation on edge computing devices by bounding queue depths (e.g., \texttt{Keep Last 5}).
+\end{itemize}
+
+\subsubsection{Dynamic Coordinate Frame Transformations (\texttt{tf2})}
+A unique challenge in tip-growing robots is that their physical morphology is non-rigid and continuously expanding. As the flexible tube everts and bends under tendon tension, the spatial distance and orientation between the base station and the moving camera changes dynamically. 
+
+ROS 2 provides the \texttt{tf2} transform library to maintain coordinate frames over time in a tree structure:
+\begin{equation}
+    \text{world} \longrightarrow \text{base\_link} \longrightarrow \text{growing\_body} \longrightarrow \text{growing\_tip} \longrightarrow \text{camera\_optical\_frame}
+\end{equation}
+The \texttt{tf2} library tracks time-stamped transformation matrices between each frame. When the YOLO detection node identifies an obstacle in the camera's local 2D pixel space, \texttt{tf2} enables the path planner to transform this detection into global 3D coordinates relative to \texttt{base\_link}, allowing the planner to compute collision-free steering angles.
+
+\subsubsection{Microcontroller Interfacing and Micro-ROS}
+Physical actuation of the four steering servos and the pneumatic solenoid valve requires precise microsecond-level timing generated by an embedded microcontroller (ESP32). Rather than relying on custom, fragile string-based serial parsing scripts, the system employs \texttt{micro-ROS}. 
+
+Micro-ROS brings ROS 2 directly to resource-constrained microcontrollers using the Micro XRCE-DDS (eXtremely Resource Constrained Environments DDS) protocol over UART/USB. The microcontroller runs a lightweight micro-ROS client that communicates with a micro-ROS agent hosted on the primary Linux computer. As a result, the ESP32 operates as a native participant in the ROS 2 graph, subscribing to servo command topics and publishing pressure sensor readings directly without translation intermediaries.
+
+\subsubsection{Development, Diagnostics, and Visualization Ecosystem}
+Familiarising ourselves with ROS 2 gave the project team access to a rich suite of developer tools that greatly accelerated debugging and experimental validation:
+
+\begin{itemize}
+    \item \textbf{Introspection CLI Tools:} Utilities such as \texttt{ros2 topic hz}, \texttt{ros2 topic echo}, \texttt{ros2 node list}, and \texttt{ros2 doctor} allowed the team to monitor topic publish frequencies, inspect data payloads, and diagnose network health in real time.
+    \item \textbf{Telemetry Recording and Replay (\texttt{rosbag2}):} High-dimensional sensor data, camera frames, and tendon commands can be logged into structured bag files and replayed deterministically offline, enabling algorithm tuning without continuous physical robot deployment.
+    \item \textbf{3D Visualization with RViz2:} The RViz2 tool provides an intuitive graphical interface to visualize coordinate frames (\texttt{tf2}), live camera images, detected bounding boxes, and simulated tube curvatures simultaneously.
+    \item \textbf{Simulation with Gazebo:} Facilitates digital prototyping and trajectory simulation before executing physical tests on hardware.
+\end{itemize}
 
 \subsection{YOLO Object Detection}
 

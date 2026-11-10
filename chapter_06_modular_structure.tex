@@ -1,7 +1,5 @@
 \chapter{MODULAR STRUCTURE}
 
-\section{Introduction}
-
 The proposed pneumatic tip-growing robot is organized into separate functional modules to simplify mechanical design, hardware integration, software development, and testing. Each module performs a specific function and communicates with the relevant modules to support the overall operation of the robot.
 
 The system consists of a pneumatic growth module, a tendon-based steering module, a servo-actuation module, a camera-based perception module, an embedded electronics module, and a ROS 2 software module. These components work together to support forward growth, directional steering, environmental observation, and navigation planning.
@@ -152,21 +150,37 @@ The final wiring and pin assignments depend on the selected hardware and must be
 
 \section{ROS 2 Software Module}
 
-The ROS 2 software module coordinates visual perception, path planning, steering commands, and pneumatic growth control. The software is divided into separate nodes so that each function can be developed and tested independently.
+The ROS 2 software module coordinates visual perception, object detection, obstacle-aware path planning, directional steering kinematics, and pneumatic growth actuation. Leveraging the distributed publish--subscribe computational graph of ROS 2, the software is decomposed into independent, modular nodes that communicate across standardized message interfaces. This modularity decouples sensing, computation, and actuation, enabling each component to be developed, simulated, and debugged independently before complete hardware-in-the-loop deployment.
 
-The principal software components are:
+\subsection{Node Architecture and Communication Topics}
+The principal functional nodes within the ROS 2 software module comprise:
 
 \begin{enumerate}
-    \item \textbf{Camera and object detection node:} Receives camera images and runs the pretrained YOLO model.
-    \item \textbf{Path-planning node:} Uses available environmental information to determine a desired direction or trajectory.
-    \item \textbf{Steering-controller node:} Converts the desired direction into commands for the four steering tendons.
-    \item \textbf{Servo-control interface:} Sends commands to the embedded controller for servo actuation.
-    \item \textbf{Growth-control node:} Manages pneumatic growth commands and, where implemented, pressure feedback.
+    \item \textbf{Camera Driver Node (\texttt{camera\_driver\_node}):} Interfaces directly with the tip-mounted camera hardware (via V4L2 or USB video capture). It captures visual frames at a deterministic frame rate (e.g., 30~frames per second) and publishes raw frames onto the \texttt{/camera/image\_raw} topic using the standard \texttt{sensor\_msgs/msg/Image} format, accompanied by camera intrinsic parameters on \texttt{/camera/camera\_info}.
+    
+    \item \textbf{Object Detection Node (\texttt{yolo\_detector\_node}):} Subscribes to \texttt{/camera/image\_raw}. Using the \texttt{cv\_bridge} interface library, it converts the incoming ROS image messages into OpenCV NumPy image representations, performs letterboxing and tensor normalization, and executes inference using the pretrained YOLO model. The detected objects, along with bounding-box coordinates, class labels, and confidence metrics, are published onto \texttt{/detections/bounding\_boxes} using the \texttt{vision\_msgs/msg/Detection2DArray} message definition.
+    
+    \item \textbf{Path-Planning Node (\texttt{path\_planner\_node}):} Receives bounding-box detections from \texttt{/detections/bounding\_boxes} and spatial transformation data from the \texttt{tf2} buffer. By evaluating the centroid and spatial span of detected obstacles within the camera's field of view, the planner calculates obstacle-free navigation vectors. It computes a target tip bending angle $(\theta_x, \theta_y)$ and publishes steering commands to \texttt{/navigation/target\_heading}.
+    
+    \item \textbf{Tendon Kinematics and Steering Controller (\texttt{tendon\_controller\_node}):} Subscribes to \texttt{/navigation/target\_heading}. This node executes the inverse kinematic model for the antagonistic four-tendon configuration. It maps the requested Cartesian bending angle $(\theta_x, \theta_y)$ into required tendon displacements $(\Delta l_1, \Delta l_2, \Delta l_3, \Delta l_4)$ and corresponding angular setpoints for the four base-mounted servo motors. These setpoints are published onto \texttt{/actuation/servo\_commands} as a multi-channel floating-point array (\texttt{std\_msgs/msg/Float32MultiArray}).
+    
+    \item \textbf{Pneumatic Growth Manager (\texttt{growth\_manager\_node}):} Manages pneumatic eversion and coordinated cable payout. It subscribes to chamber pressure measurements from \texttt{/sensors/pneumatic\_pressure} (\texttt{sensor\_msgs/msg/FluidPressure}) and publishes solenoid valve modulation commands onto \texttt{/actuation/valve\_state}. Crucially, this node synchronizes the forward growth rate with the servo spool payout rate, preventing cable tension buildup from stalling tube eversion or excess slack from causing cable snagging.
+    
+    \item \textbf{Microcontroller Hardware Bridge (\texttt{micro\_ros\_bridge\_node}):} Establishes the communication conduit between the host ROS 2 computation environment and the ESP32 microcontroller. Operating over Micro-ROS (Micro XRCE-DDS) via a high-speed serial UART link, this bridge maps ROS 2 topic subscriptions and publications directly to hardware pins on the microcontroller.
 \end{enumerate}
 
-The embedded hardware interface communicates with the ROS 2 computer through a suitable protocol. The exact communication method and topic definitions depend on the final implementation.
+\subsection{Coordinate Transformation Pipeline (\texttt{tf2})}
+A specialized responsibility of the software module is tracking the dynamic morphology of the growing robot. Unlike traditional rigid link manipulators whose segment lengths are invariant, the length of the everting tube grows continuously:
+\begin{itemize}
+    \item \texttt{base\_link}: A fixed spatial coordinate frame anchored at the base station and spool assembly.
+    \item \texttt{growing\_body}: An intermediate coordinate frame representing the instantaneous curved centerline of the everting tube.
+    \item \texttt{growing\_tip}: The dynamic coordinate frame positioned at the leading edge of eversion, which translates forward during growth and rotates during tendon steering.
+    \item \texttt{camera\_optical\_frame}: The coordinate frame of the visual sensor, rigidly attached to the growing tip.
+\end{itemize}
+By continuously publishing transformation updates via the \texttt{tf2} library, the software allows visual detections gathered in camera optical coordinates to be instantly expressed in base or world coordinates for consistent trajectory generation.
 
-The modular software structure allows the perception and planning functions to be tested in simulation before connection to the physical actuators.
+\subsection{System Safety and Watchdog Monitoring}
+To protect delicate soft robot structures from excessive stress or pressure, the ROS 2 software module incorporates a dedicated watchdog timer. The node monitors periodic heartbeat signals exchanged between the host computer and the embedded microcontroller. If communication is interrupted, or if internal chamber pressure exceeds predefined safety thresholds, the software immediately initiates an emergency shutdown service: venting the pneumatic solenoid valve to atmospheric pressure and locking the servo spools to prevent uncontrolled runaway.
 
 \section{Integration of the Modules}
 

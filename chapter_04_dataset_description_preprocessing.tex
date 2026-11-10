@@ -1,7 +1,5 @@
 \chapter{DATASET DESCRIPTION AND PREPROCESSING}
 
-\section{Introduction}
-
 Computer vision is an important component of the proposed pneumatic tip-growing robot because it provides visual information about the environment ahead of the growing tip. The camera captures images that are processed by a pretrained You Only Look Once (YOLO) object detection model. The detection results can be used by the navigation system to identify visible objects and support path-planning decisions.
 
 Unlike a project that trains an object detection model from scratch, the proposed system initially uses a pretrained YOLO model. Therefore, the main focus of this chapter is image acquisition, preprocessing, model inference, and integration of detection results with the Robot Operating System 2 (ROS 2) architecture.
@@ -97,11 +95,11 @@ This workflow separates image processing from steering and pneumatic control, al
 
 \section{Integration with ROS 2}
 
-The camera node publishes image messages through a ROS 2 image topic. The object detection node subscribes to the image stream, performs the required preprocessing, and runs inference using the pretrained YOLO model.
+The visual perception pipeline is integrated into the robotic system through standard ROS 2 messaging interfaces. The camera driver node acquires live frames from the tip camera and publishes them onto the \texttt{/camera/image\_raw} topic using the standard \texttt{sensor\_msgs/msg/Image} message structure.
 
-The resulting detections are made available to the path planner through an appropriate ROS 2 message or topic. The path planner determines a desired direction based on the navigation strategy, and the steering controller converts the direction into commands for the four tendon-actuation servos.
+The object detection node subscribes to \texttt{/camera/image\_raw}. To interface the incoming ROS image messages with the computer vision libraries, the node employs the \texttt{cv\_bridge} package. This utility converts the serialized ROS image payload into an OpenCV BGR NumPy matrix without introducing unnecessary copying overhead. Once the image is processed and YOLO inference is executed, the resulting object bounding boxes, class labels, and confidence probabilities are formatted into standard \texttt{vision\_msgs/msg/Detection2DArray} messages and broadcast onto \texttt{/detections/bounding\_boxes}.
 
-The pneumatic growth controller manages the air supply and valve commands separately. This modular architecture allows the visual perception, navigation, tendon steering, and growth functions to be tested independently.
+The path-planning node subscribes to these detection arrays to extract obstacle boundaries and estimate clearance corridors relative to the camera frame. The planner derives target steering angles, which the tendon kinematics controller converts into servo commands for the four steering tendons. Simultaneously, the pneumatic growth controller regulates the air supply and valve duty cycle. This standardized ROS 2 publish--subscribe architecture completely decouples image processing from actuation, ensuring that computer vision algorithms can be modified, re-trained, or replaced without altering the low-level steering or growth controllers.
 
 \section{Evaluation Considerations}
 
